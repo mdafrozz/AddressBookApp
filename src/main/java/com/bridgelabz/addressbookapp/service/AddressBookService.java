@@ -1,34 +1,44 @@
 package com.bridgelabz.addressbookapp.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
+import com.bridgelabz.addressbookapp.exception.AddressBookException;
 import com.bridgelabz.addressbookapp.model.AddressBookModel;
+import com.bridgelabz.addressbookapp.repository.AddressBookRepository;
 
 @Service
-public class AddressBookService {
+public class AddressBookService implements IAddressBookService {
 	
-	List<AddressBookModel> DataList = new ArrayList<>();
+	@Autowired
+	AddressBookRepository repo;
 	
-	public List<AddressBookModel> getData() {
-        return DataList;
+	public String getData() {
+        return "Welcome to AddressBook App..!!";
     }
 
-    public AddressBookModel getById(int Id) {
-     return DataList.get(Id-1);
+	public AddressBookModel findById(int id) {
+        return repo.findById(id).stream()
+                .filter(data -> data.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new AddressBookException("Contact Not Found/ Incorrect ID"));
     }
-
-    public AddressBookModel addContact(AddressBookDTO dto) {
-        AddressBookModel model = new AddressBookModel(DataList.size()+1, dto);
-        DataList.add(model);
+	
+	public List<AddressBookModel> getAll() {
+        return repo.findAll();
+    }
+	
+	public AddressBookModel addContact(AddressBookDTO dto) {
+        AddressBookModel model = new AddressBookModel(dto);
+        repo.save(model);
         return model;
     }
 
     public AddressBookModel editContact(int Id, AddressBookDTO dto) {
-        AddressBookModel model = this.getById(Id);
+        AddressBookModel model = this.findById(Id);
         model.setFullName(dto.getFullName());
         model.setAddress(dto.getAddress());
         model.setPhoneNumber(dto.getPhoneNumber());
@@ -36,11 +46,16 @@ public class AddressBookService {
         model.setState(dto.getState());
         model.setZipCode(dto.getZipCode());
         model.setEmail(dto.getEmail());
-        DataList.set(Id-1,model);
+        repo.save(model);
         return model;
     }
 
-    public void deleteContact(int Id) {
-    	DataList.remove(Id-1);
+    public String deleteContact(int Id) {
+    	 AddressBookModel data = this.findById(Id);
+         if(data.equals(data)) {
+         	repo.deleteById(Id);
+         	return "Contact ID : "+Id;}
+         else
+         	return "Incorrect ID";
     }
 }
