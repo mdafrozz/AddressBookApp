@@ -11,30 +11,36 @@ import com.bridgelabz.addressbookapp.model.AddressBookModel;
 @Service
 public class AddressBookService {
 	
+	List<AddressBookModel> DataList = new ArrayList<>();
+	
 	public List<AddressBookModel> getData() {
-        List<AddressBookModel> AddressBookModelList = new ArrayList<>();
-        AddressBookModelList.add(new AddressBookModel(1, new AddressBookDTO("Mdafroz",
-                "Gadag","8553304009", "Gadag","Karnataka",582101,"mdafroz.gm@gmail.com")));
-        return AddressBookModelList;
+        return DataList;
     }
 
     public AddressBookModel getById(int Id) {
-        AddressBookModel AddressBookModel = new AddressBookModel(Id, new AddressBookDTO("Mdafroz",
-                "Gadag","8553304009", "Gadag","Karnataka",582101,"mdafroz.gm@gmail.com"));
-        return AddressBookModel;
+     return DataList.get(Id-1);
     }
 
-    public AddressBookModel addContact(AddressBookDTO addressBookDTO) {
-        AddressBookModel model = new AddressBookModel(1, addressBookDTO);
+    public AddressBookModel addContact(AddressBookDTO dto) {
+        AddressBookModel model = new AddressBookModel(DataList.size()+1, dto);
+        DataList.add(model);
         return model;
     }
 
-    public AddressBookModel editContact(int Id, AddressBookDTO addressBookDTO) {
-        AddressBookModel model = new AddressBookModel(Id, addressBookDTO);
+    public AddressBookModel editContact(int Id, AddressBookDTO dto) {
+        AddressBookModel model = this.getById(Id);
+        model.setFullName(dto.getFullName());
+        model.setAddress(dto.getAddress());
+        model.setPhoneNumber(dto.getPhoneNumber());
+        model.setCity(dto.getCity());
+        model.setState(dto.getState());
+        model.setZipCode(dto.getZipCode());
+        model.setEmail(dto.getEmail());
+        DataList.set(Id-1,model);
         return model;
     }
 
-    public void deleteContact(int personId) {
-
+    public void deleteContact(int Id) {
+    	DataList.remove(Id-1);
     }
 }
