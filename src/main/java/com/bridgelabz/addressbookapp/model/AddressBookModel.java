@@ -25,7 +25,7 @@ public class AddressBookModel {
 	private String phoneNumber;
 	private String city;
 	private String state;
-	private int zipCode;
+	private String zipCode;
 	private String email;
 	
 	public AddressBookModel(AddressBookDTO dto ) {
