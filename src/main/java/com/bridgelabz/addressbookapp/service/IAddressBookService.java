@@ -12,4 +12,5 @@ public interface IAddressBookService {
 	public AddressBookModel addContact(AddressBookDTO dto);
 	public AddressBookModel editContact(int Id, AddressBookDTO dto);
 	public String deleteContact(int Id);
+	public AddressBookModel getByEmail(String email);
 }
