@@ -58,4 +58,8 @@ public class AddressBookService implements IAddressBookService {
          else
          	return "Incorrect ID";
     }
+    
+    public AddressBookModel getByEmail(String email) {
+        return repo.findByEmail(email);
+    }
 }
