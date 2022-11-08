@@ -7,10 +7,11 @@ import com.bridgelabz.addressbookapp.model.AddressBookModel;
 
 public interface IAddressBookService {
 	public String getData();
-	public AddressBookModel findById(int id);
+	public AddressBookModel findById(String token);
 	public List<AddressBookModel> getAll();
-	public AddressBookModel addContact(AddressBookDTO dto);
-	public AddressBookModel editContact(int Id, AddressBookDTO dto);
-	public String deleteContact(int Id);
+	public String addContact(AddressBookDTO dto);
+    public String editContact(String token, AddressBookDTO dto);
+	public String deleteContact(String token);
 	public AddressBookModel getByEmail(String email);
+    public String generateToken(int id);
 }
