@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.addressbookapp.dto.AddressBookDTO;
 import com.bridgelabz.addressbookapp.dto.ResponseDTO;
+import com.bridgelabz.addressbookapp.exception.AddressBookException;
 import com.bridgelabz.addressbookapp.model.AddressBookModel;
 import com.bridgelabz.addressbookapp.service.IAddressBookService;
 
@@ -35,11 +36,11 @@ public class AddressBookController {
         return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
     }
 	
-	@GetMapping(value = {"/getbyid/{Id}"}) 
-	public ResponseEntity<ResponseDTO> getById(@PathVariable int Id) { 
-	  AddressBookModel data = iservice.findById(Id); 
+	@GetMapping(value = {"/getbyid/{token}"}) 
+	public ResponseEntity<ResponseDTO> getById(@PathVariable String token) { 
+	  AddressBookModel data = iservice.findById(token); 
 	  ResponseDTO responseDTO = new ResponseDTO("GET Call for ID Successfull!!",data); 
-	  return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK); }
+	  return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);}
 	 
     
     @GetMapping(value = {"/getbyemail/{email}"})
@@ -50,32 +51,39 @@ public class AddressBookController {
     }
     
     @GetMapping("/getall")
-    public List<AddressBookModel> showAll() {
+    public List<AddressBookModel> showAll()throws AddressBookException {
         List<AddressBookModel> response = iservice.getAll();
         return response;
     }
     
     @PostMapping(value = {"/add"})
-    public ResponseEntity<ResponseDTO> AddContact(@Valid @RequestBody AddressBookDTO addressBookDTO) {
-        AddressBookModel data = iservice.addContact(addressBookDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Contact Saved Successfully!!!",data);
-        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    public ResponseEntity<ResponseDTO> AddContact(@Valid @RequestBody AddressBookDTO addressBookDTO){
+        String token = iservice.addContact(addressBookDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Contact Saved Successfully!!!",token);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = {"/edit/{Id}"})
+    @PutMapping(value = {"/edit/{token}"})
     public ResponseEntity<ResponseDTO> EditContact(@Valid @RequestBody AddressBookDTO addressBookDTO,
-    		@PathVariable int Id){
-    	AddressBookModel data = iservice.editContact(Id,addressBookDTO);
-        ResponseDTO responseDTO = new ResponseDTO("Contact Updated Successfully!!!",data);
-        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+    		@PathVariable String token){
+    	String Token = iservice.editContact(token,addressBookDTO);
+        ResponseDTO responseDTO = new ResponseDTO("Contact Updated Successfully!!!",Token);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping(value = {"/delete/{Id}"})
-    public ResponseEntity<ResponseDTO> DeleteContact(@PathVariable int Id) {
-    	 iservice.deleteContact(Id);
+    @DeleteMapping(value = {"/delete/{token}"})
+    public ResponseEntity<ResponseDTO> DeleteContact(@PathVariable String token) {
+    	 String Token = iservice.deleteContact(token);
         ResponseDTO responseDTO = new ResponseDTO("Contact Deleted Successfully!!!",
-                "ContactID: "+Id + " DELETED!!!");
-        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.OK);
+                Token + " DELETED!!!");
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.ACCEPTED);
+    }
+    
+    @PostMapping(value = {"/gen/{id}"})
+    public ResponseEntity<ResponseDTO> GenerateToken(@PathVariable int id)throws Exception {
+        String token = iservice.generateToken(id);
+        ResponseDTO responseDTO = new ResponseDTO("Token Generated Successfully!!!",token);
+        return new ResponseEntity<ResponseDTO>(responseDTO, HttpStatus.CREATED);
     }
 
 }
